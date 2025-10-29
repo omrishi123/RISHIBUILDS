@@ -1,48 +1,42 @@
 /**
- * @description This ruleset enforces a strict model where only authenticated admins can manage app artifacts.
- *              It leverages Firebase Authentication to verify admin status.
- * @dataStructure All app artifact metadata is stored in the `/appArtifacts/{appArtifactId}` collection.
- * @keySecurityDecisions Only authenticated users are allowed access, acting as admins. Unauthenticated access is strictly forbidden.
- *                       There is no support for a more complex roles or ownership model.
+ * @file Firebase Security Rules for Firestore.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict admin-only access model for the `appArtifacts` collection. Only authenticated administrators can create, read, update, or delete app artifacts.
+ *
+ * Data Structure:
+ * All app artifact data is stored in the top-level `/appArtifacts/{appArtifactId}` collection.
+ *
+ * Key Security Decisions:
+ * - Public listing of app artifacts is explicitly disallowed to prevent unauthorized access.
+ * - All write operations require the user to be authenticated (admin role).
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants full access to authenticated admins for managing app artifacts.
+     * @description Manages application artifacts.  Accessible only to authenticated admins via Firebase Authentication.
      * @path /appArtifacts/{appArtifactId}
-     * @allow (create) - Authenticated admin creates a new app artifact with valid metadata.
-     *                   `request.auth.uid != null`
+     * @allow (create) - Authenticated admin creates an app artifact.
      * @allow (get) - Authenticated admin retrieves an app artifact.
-     *                   `request.auth.uid != null`
-     * @allow (list) - Authenticated admin lists all app artifacts.
-     *                   `request.auth.uid != null`
-     * @allow (update) - Authenticated admin updates an existing app artifact.
-     *                   `request.auth.uid != null`
+     * @allow (update) - Authenticated admin updates an app artifact.
      * @allow (delete) - Authenticated admin deletes an app artifact.
-     *                   `request.auth.uid != null`
      * @deny (create) - Unauthenticated user attempts to create an app artifact.
-     *                  `request.auth.uid == null`
      * @deny (get) - Unauthenticated user attempts to retrieve an app artifact.
-     *               `request.auth.uid == null`
-     * @deny (list) - Unauthenticated user attempts to list app artifacts.
-     *               `request.auth.uid == null`
      * @deny (update) - Unauthenticated user attempts to update an app artifact.
-     *                  `request.auth.uid == null`
      * @deny (delete) - Unauthenticated user attempts to delete an app artifact.
-     *                  `request.auth.uid == null`
-     * @principle Restricts access to the appArtifacts collection to authenticated admins only.
+     * @principle Enforces admin-only access for managing app artifacts.
      */
     match /appArtifacts/{appArtifactId} {
       allow get: if isSignedIn();
-      allow list: if isSignedIn();
+      allow list: if false; // Explicitly disallow listing
       allow create: if isSignedIn();
       allow update: if isSignedIn() && resource != null;
       allow delete: if isSignedIn() && resource != null;
     }
 
-    // --- Helper Functions ---
+    // Helper function to check if a user is signed in
     function isSignedIn() {
       return request.auth != null;
     }
