@@ -18,8 +18,7 @@ type AppDetailPageProps = {
   params: { appId: string };
 };
 
-export default function AppDetailPage({ params }: AppDetailPageProps) {
-  const { appId } = params;
+export default function AppDetailPage({ params: { appId } }: AppDetailPageProps) {
   const firestore = useFirestore();
 
   const appRef = useMemoFirebase(() => {
