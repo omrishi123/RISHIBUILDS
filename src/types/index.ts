@@ -6,4 +6,5 @@ export type AppArtifact = {
   description: string;
   downloadUrl: string;
   createdAt: Timestamp;
+  logoBase64?: string;
 };

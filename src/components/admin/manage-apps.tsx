@@ -10,6 +10,7 @@ import {
 } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
+import Image from 'next/image';
 
 import {
   Card,
@@ -31,7 +32,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2, Loader2, Package } from 'lucide-react';
+import { Trash2, Loader2, Package, Image as ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
 
 export function ManageApps() {
@@ -86,7 +87,13 @@ export function ManageApps() {
               {apps.map((app) => (
                 <li key={app.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
                   <div className="flex items-center gap-3">
-                    <Package className="h-5 w-5 text-muted-foreground" />
+                  {app.logoBase64 ? (
+                        <Image src={app.logoBase64} alt={`${app.name} logo`} width={40} height={40} className="rounded-md object-contain" />
+                    ) : (
+                        <div className="w-10 h-10 flex-shrink-0 rounded-md bg-muted flex items-center justify-center">
+                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                        </div>
+                    )}
                     <div>
                         <p className="font-semibold">{app.name}</p>
                         <p className="text-xs text-muted-foreground">
@@ -115,7 +122,7 @@ export function ManageApps() {
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action cannot be undone. This will permanently delete the app entry for
-                          <span className="font-bold"> "{app.name}"</span>. The file hosted on MediaFire will not be deleted.
+                          <span className="font-bold"> "{app.name}"</span>.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
