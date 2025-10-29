@@ -3,7 +3,7 @@
 
 import { useMemo } from 'react';
 import { doc, increment } from 'firebase/firestore';
-import { useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
+import { useFirestore, useDoc, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
 import { SiteHeader } from '@/components/site-header';
 import { Loader2, Download, Package, Info, MessageSquare, BarChart2, Image as ImageIcon } from 'lucide-react';
@@ -36,9 +36,9 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     event.preventDefault();
     
     // Increment the download count in Firestore
-    updateDocumentNonBlocking(appRef, {
+    setDocumentNonBlocking(appRef, {
         downloadCount: increment(1)
-    });
+    }, { merge: true });
 
     // Programmatically start the download
     window.location.href = app.downloadUrl;
