@@ -5,9 +5,8 @@ import { useMemo } from 'react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { Website as WebsiteType } from '@/types';
-import { Loader2, Globe } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Loader2 } from 'lucide-react';
+import { WebsiteCard } from '@/components/website-card';
 
 export function WebsiteList() {
   const firestore = useFirestore();
@@ -48,24 +47,7 @@ export function WebsiteList() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {websites.map((site) => (
-        <Card key={site.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader className="flex-row gap-4 items-center">
-                <div className="w-12 h-12 flex-shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Globe className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                    <CardTitle>{site.name}</CardTitle>
-                    <CardDescription className="line-clamp-2">{site.description}</CardDescription>
-                </div>
-            </CardHeader>
-            <CardContent>
-            <Button asChild variant="outline">
-                <a href={site.url} target="_blank" rel="noopener noreferrer">
-                Visit Site
-                </a>
-            </Button>
-            </CardContent>
-        </Card>
+            <WebsiteCard key={site.id} site={site} />
         ))}
     </div>
   );
