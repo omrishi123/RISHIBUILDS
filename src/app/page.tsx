@@ -6,7 +6,9 @@ import { WebsiteList } from '@/components/website-list';
 import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, ArrowDown } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -41,7 +43,14 @@ export default function Home() {
           <AppGrid searchTerm={searchTerm} />
         </section>
 
-        <Separator className="my-12 md:my-16" />
+        <div className="my-12 flex justify-center">
+          <Button asChild variant="outline" size="lg" className="group">
+            <Link href="#websites" className="flex items-center gap-2">
+              <span>My Websites</span>
+              <ArrowDown className="h-5 w-5 transition-transform group-hover:translate-y-1" />
+            </Link>
+          </Button>
+        </div>
 
         <section id="websites">
           <h2 className="text-3xl font-bold tracking-tight mb-6">My Links</h2>
@@ -49,7 +58,7 @@ export default function Home() {
         </section>
 
       </main>
-      <footer className="py-6 border-t">
+      <footer className="py-6 border-t mt-16">
         <div className="container mx-auto text-center text-sm text-muted-foreground">
           App Central © {new Date().getFullYear()}
         </div>
