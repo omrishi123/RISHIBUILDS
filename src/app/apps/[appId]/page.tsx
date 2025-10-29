@@ -1,5 +1,4 @@
 
-
 'use client';
 
 import { useMemo } from 'react';
@@ -30,12 +29,19 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
 
   const { data: app, isLoading, error } = useDoc<AppType>(appRef);
 
-  const handleDownloadClick = () => {
-    if (!appRef) return;
+  const handleDownloadClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (!appRef || !app?.downloadUrl) return;
+
+    // Prevent the link from navigating immediately
+    event.preventDefault();
+    
     // Increment the download count in Firestore
     updateDocumentNonBlocking(appRef, {
         downloadCount: increment(1)
     });
+
+    // Programmatically start the download
+    window.location.href = app.downloadUrl;
   };
 
   if (isLoading) {
@@ -86,11 +92,9 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                 )}
               </div>
             </Card>
-            <Button asChild className="w-full text-lg" size="lg" onClick={handleDownloadClick}>
-              <a href={app.downloadUrl} download>
+            <Button className="w-full text-lg" size="lg" onClick={handleDownloadClick}>
                 <Download className="mr-3 h-5 w-5" />
                 Download APK
-              </a>
             </Button>
           </div>
 
