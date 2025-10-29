@@ -56,10 +56,10 @@ export function EditAppForm({ app, onSuccess }: EditAppFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: app.name,
-      version: app.version,
-      description: app.description,
-      downloadUrl: app.downloadUrl,
+      name: app.name || '',
+      version: app.version || '',
+      description: app.description || '',
+      downloadUrl: app.downloadUrl || '',
     },
   });
 
