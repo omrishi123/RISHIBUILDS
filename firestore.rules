@@ -1,0 +1,51 @@
+/**
+ * @file Firebase Security Rules for Firestore.
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict authenticated-admin-only model for managing application artifacts.
+ * Only users authenticated via Firebase Authentication can create, read, update, or delete app artifacts.
+ *
+ * Data Structure:
+ * App artifact metadata is stored in the top-level `/appArtifacts/{appArtifactId}` collection.
+ *
+ * Key Security Decisions:
+ * - Public listing of app artifacts is disallowed.
+ * - Data validation is relaxed during this prototyping phase, focusing on authorization.
+ *
+ * Denormalization for Authorization:
+ * No denormalization is needed because the Firebase Authentication status `request.auth` is sufficient to check authentication.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Manages app artifact metadata. Only authenticated admins can perform CRUD operations.
+     * @path /appArtifacts/{appArtifactId}
+     * @allow (create) User with valid Firebase Authentication can create a new app artifact.
+     * @deny (create) User without Firebase Authentication attempts to create an app artifact.
+     * @allow (get) User with valid Firebase Authentication can retrieve an app artifact.
+     * @deny (get) User without Firebase Authentication attempts to retrieve an app artifact.
+     * @allow (update) User with valid Firebase Authentication can update an existing app artifact.
+     * @deny (update) User without Firebase Authentication attempts to update an app artifact.
+     * @allow (delete) User with valid Firebase Authentication can delete an existing app artifact.
+     * @deny (delete) User without Firebase Authentication attempts to delete an app artifact.
+     * @principle Requires valid Firebase Authentication for all access.
+     */
+    match /appArtifacts/{appArtifactId} {
+      allow get: if isSignedIn();
+      allow list: if false;
+      allow create: if isSignedIn();
+      allow update: if isSignedIn() && resource != null;
+      allow delete: if isSignedIn() && resource != null;
+    }
+
+    /**
+     * @description Checks if the user is signed in.
+     * @returns {bool} True if the user is signed in, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+  }
+}
