@@ -2,8 +2,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import { doc, increment } from 'firebase/firestore';
-import { useFirestore, useDoc, useMemoFirebase, setDocumentNonBlocking } from '@/firebase';
+import { doc, increment, updateDoc } from 'firebase/firestore';
+import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
 import { SiteHeader } from '@/components/site-header';
 import { Loader2, Download, Package, Info, MessageSquare, BarChart2, Image as ImageIcon } from 'lucide-react';
@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { format } from 'date-fns';
+import { useToast } from '@/hooks/use-toast';
 
 type AppDetailPageProps = {
   params: { appId: string };
@@ -21,6 +22,7 @@ type AppDetailPageProps = {
 export default function AppDetailPage({ params }: AppDetailPageProps) {
   const { appId } = params;
   const firestore = useFirestore();
+  const { toast } = useToast();
 
   const appRef = useMemoFirebase(() => {
     if (!firestore || !appId) return null;
@@ -29,18 +31,27 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
 
   const { data: app, isLoading, error } = useDoc<AppType>(appRef);
 
-  const handleDownloadClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleDownloadClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!appRef || !app?.downloadUrl) return;
 
     // Prevent the link from navigating immediately
     event.preventDefault();
     
-    // Increment the download count in Firestore
-    setDocumentNonBlocking(appRef, {
-        downloadCount: increment(1)
-    }, { merge: true });
+    try {
+      // Use updateDoc to reliably increment the download count
+      await updateDoc(appRef, {
+          downloadCount: increment(1)
+      });
+    } catch (e) {
+      console.error("Failed to increment download count:", e);
+      toast({
+        variant: "destructive",
+        title: "Update Failed",
+        description: "Could not update the download count.",
+      });
+    }
 
-    // Programmatically start the download
+    // Programmatically start the download after the update
     window.location.href = app.downloadUrl;
   };
 
