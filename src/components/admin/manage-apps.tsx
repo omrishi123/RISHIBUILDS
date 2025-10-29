@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import type { App as AppType } from '@/types';
+import { useState } from 'react';
+import type { AppArtifact as AppType } from '@/types';
 import {
   collection,
   query,
-  onSnapshot,
-  deleteDoc,
   doc,
   orderBy,
 } from 'firebase/firestore';
-import { ref, deleteObject } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase';
+import { ref, deleteObject, getStorage } from 'firebase/storage';
+import { useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
 import {
@@ -36,36 +34,28 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Trash2, Loader2, Package } from 'lucide-react';
 import { format } from 'date-fns';
-import { Separator } from '../ui/separator';
 
 export function ManageApps() {
-  const [apps, setApps] = useState<AppType[]>([]);
-  const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { toast } = useToast();
+  const firestore = useFirestore();
+  
+  const appsQuery = useMemoFirebase(() => {
+    return query(collection(firestore, 'appArtifacts'), orderBy('createdAt', 'desc'))
+  }, [firestore]);
 
-  useEffect(() => {
-    const q = query(collection(db, 'apps'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const appsData: AppType[] = [];
-      querySnapshot.forEach((doc) => {
-        appsData.push({ id: doc.id, ...doc.data() } as AppType);
-      });
-      setApps(appsData);
-      setLoading(false);
-    });
-    return () => unsubscribe();
-  }, []);
+  const { data: apps, isLoading: loading } = useCollection<AppType>(appsQuery);
 
   const handleDelete = async (app: AppType) => {
     setDeletingId(app.id);
+    const storage = getStorage();
     try {
       // 1. Delete file from Storage
       const fileRef = ref(storage, app.storagePath);
       await deleteObject(fileRef);
 
       // 2. Delete document from Firestore
-      await deleteDoc(doc(db, 'apps', app.id));
+      deleteDocumentNonBlocking(doc(firestore, 'appArtifacts', app.id));
 
       toast({
         title: 'App Deleted',
@@ -97,7 +87,7 @@ export function ManageApps() {
             <div className="flex items-center justify-center h-full">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : apps.length > 0 ? (
+          ) : apps && apps.length > 0 ? (
             <ul className="space-y-4">
               {apps.map((app) => (
                 <li key={app.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">

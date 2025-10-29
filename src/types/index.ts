@@ -1,6 +1,6 @@
 import type { Timestamp } from "firebase/firestore";
 
-export type App = {
+export type AppArtifact = {
   id: string;
   name: string;
   description: string;

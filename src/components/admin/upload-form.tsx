@@ -27,9 +27,9 @@ import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, UploadCloud, CheckCircle } from 'lucide-react';
 
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db, storage } from '@/lib/firebase';
+import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
+import { collection, serverTimestamp } from 'firebase/firestore';
+import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 import { formatBytes } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
@@ -50,6 +50,7 @@ export function UploadForm() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const firestore = useFirestore();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,7 +64,8 @@ export function UploadForm() {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const file = values.file;
     if (!file) return;
-
+    
+    const storage = getStorage();
     setIsUploading(true);
     const storagePath = `app_files/${Date.now()}_${file.name}`;
     const storageRef = ref(storage, storagePath);
@@ -88,7 +90,7 @@ export function UploadForm() {
       async () => {
         const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
         
-        await addDoc(collection(db, 'apps'), {
+        addDocumentNonBlocking(collection(firestore, 'appArtifacts'), {
           name: values.name,
           description: values.description,
           downloadURL,
@@ -109,6 +111,8 @@ export function UploadForm() {
         setIsUploading(false);
         setUploadProgress(0);
         form.reset();
+        // This is a workaround to reset the file input visually
+        form.setValue('file', new File([], ""));
       }
     );
   };

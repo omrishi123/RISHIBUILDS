@@ -1,4 +1,4 @@
-import type { App as AppType } from '@/types';
+import type { AppArtifact as AppType } from '@/types';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';

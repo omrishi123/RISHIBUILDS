@@ -1,37 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import type { App as AppType } from '@/types';
+import { collection, query, orderBy } from 'firebase/firestore';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import type { AppArtifact as AppType } from '@/types';
 import { AppCard } from '@/components/app-card';
 import { Loader2 } from 'lucide-react';
 
 export function AppGrid() {
-  const [apps, setApps] = useState<AppType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const firestore = useFirestore();
+  
+  const appsQuery = useMemoFirebase(() => {
+      if (!firestore) return null;
+      return query(collection(firestore, 'appArtifacts'), orderBy('createdAt', 'desc'));
+  }, [firestore]);
 
-  useEffect(() => {
-    const q = query(collection(db, 'apps'), orderBy('createdAt', 'desc'));
-
-    const unsubscribe = onSnapshot(
-      q,
-      (querySnapshot) => {
-        const appsData: AppType[] = [];
-        querySnapshot.forEach((doc) => {
-          appsData.push({ id: doc.id, ...doc.data() } as AppType);
-        });
-        setApps(appsData);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Error fetching apps:', error);
-        setLoading(false);
-      }
-    );
-
-    return () => unsubscribe();
-  }, []);
+  const { data: apps, isLoading: loading, error } = useCollection<AppType>(appsQuery);
 
   if (loading) {
     return (
@@ -42,7 +25,16 @@ export function AppGrid() {
     );
   }
 
-  if (apps.length === 0) {
+  if (error) {
+    return (
+      <div className="text-center py-16 bg-card border rounded-lg">
+        <h3 className="text-xl font-semibold mb-2 text-destructive">Error loading apps.</h3>
+        <p className="text-muted-foreground">Could not fetch app list. Please try again later.</p>
+      </div>
+    )
+  }
+
+  if (!apps || apps.length === 0) {
     return (
       <div className="text-center py-16 bg-card border rounded-lg">
         <h3 className="text-xl font-semibold mb-2">No apps found.</h3>

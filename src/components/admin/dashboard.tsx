@@ -2,7 +2,7 @@
 
 import type { User } from 'firebase/auth';
 import { signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { UploadForm } from '@/components/admin/upload-form';
 import { ManageApps } from '@/components/admin/manage-apps';
@@ -16,6 +16,7 @@ type AdminDashboardProps = {
 
 export function AdminDashboard({ user }: AdminDashboardProps) {
   const { toast } = useToast();
+  const auth = useAuth();
 
   const handleLogout = async () => {
     try {

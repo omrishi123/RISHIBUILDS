@@ -4,11 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { useAuth, initiateEmailSignIn, initiateEmailSignUp } from '@/firebase';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -41,6 +37,7 @@ export function AuthForm() {
   const [activeTab, setActiveTab] = useState('login');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const auth = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -55,14 +52,17 @@ export function AuthForm() {
     setError(null);
     try {
       if (activeTab === 'login') {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        initiateEmailSignIn(auth, values.email, values.password);
       } else {
-        await createUserWithEmailAndPassword(auth, values.email, values.password);
+        initiateEmailSignUp(auth, values.email, values.password);
       }
       // The onAuthStateChanged listener in AdminPage will handle the redirect.
     } catch (err: any) {
       setError(err.message || 'An unexpected error occurred.');
     } finally {
+      // Note: With non-blocking calls, loading state might need to be handled differently,
+      // perhaps by observing the `useUser` hook's loading state globally.
+      // For this form, we'll stop loading optimistically.
       setLoading(false);
     }
   }
