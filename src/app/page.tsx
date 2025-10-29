@@ -43,14 +43,7 @@ export default function Home() {
           <AppGrid searchTerm={searchTerm} />
         </section>
 
-        <div className="my-12 flex justify-center">
-          <Button asChild variant="outline" size="lg" className="group">
-            <Link href="#websites" className="flex items-center gap-2">
-              <span>My Websites</span>
-              <ArrowDown className="h-5 w-5 transition-transform group-hover:translate-y-1" />
-            </Link>
-          </Button>
-        </div>
+        <Separator className="my-12" />
 
         <section id="websites">
           <h2 className="text-3xl font-bold tracking-tight mb-6">My Links</h2>
