@@ -1,4 +1,3 @@
-
 'use client';
 
 import type { User } from 'firebase/auth';
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { UploadForm } from '@/components/admin/upload-form';
 import { ManageApps } from '@/components/admin/manage-apps';
 import { ManageWebsites } from '@/components/admin/manage-websites';
+import { ManageAdmins } from '@/components/admin/manage-admins';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
@@ -63,9 +63,10 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
         <Tabs defaultValue="apps">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="apps">Manage Apps</TabsTrigger>
             <TabsTrigger value="websites">Manage Websites</TabsTrigger>
+            <TabsTrigger value="admins">Manage Admins</TabsTrigger>
           </TabsList>
           <TabsContent value="apps">
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 mt-4">
@@ -75,6 +76,9 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
           </TabsContent>
           <TabsContent value="websites">
             <ManageWebsites />
+          </TabsContent>
+          <TabsContent value="admins">
+            <ManageAdmins />
           </TabsContent>
         </Tabs>
       </main>
