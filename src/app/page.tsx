@@ -3,12 +3,10 @@
 import { SiteHeader } from '@/components/site-header';
 import { AppGrid } from '@/components/app-grid';
 import { WebsiteList } from '@/components/website-list';
-import { Separator } from '@/components/ui/separator';
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Search, ArrowDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Search } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -26,29 +24,31 @@ export default function Home() {
           </p>
         </div>
 
-        <section id="applications" className="mb-16">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold tracking-tight">Applications</h2>
+        <Tabs defaultValue="applications" className="w-full">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
+            <TabsList className="grid grid-cols-2 w-full max-w-sm">
+                <TabsTrigger value="applications">Applications</TabsTrigger>
+                <TabsTrigger value="websites">My Links</TabsTrigger>
+            </TabsList>
             <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search for apps..."
-                className="pl-10"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Input
+                    type="search"
+                    placeholder="Search for apps..."
+                    className="pl-10"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
           </div>
-          <AppGrid searchTerm={searchTerm} />
-        </section>
-
-        <Separator className="my-12" />
-
-        <section id="websites">
-          <h2 className="text-3xl font-bold tracking-tight mb-6">My Links</h2>
-          <WebsiteList />
-        </section>
+          
+          <TabsContent value="applications">
+            <AppGrid searchTerm={searchTerm} />
+          </TabsContent>
+          <TabsContent value="websites">
+            <WebsiteList />
+          </TabsContent>
+        </Tabs>
 
       </main>
       <footer className="py-6 border-t mt-16">
