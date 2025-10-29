@@ -1,17 +1,16 @@
+
+'use client';
 import { SiteHeader } from '@/components/site-header';
 import { AppGrid } from '@/components/app-grid';
+import { WebsiteList } from '@/components/website-list';
 import { Separator } from '@/components/ui/separator';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
-
-const links = [
-  { name: 'GitHub', url: 'https://github.com' },
-  { name: 'Documentation', url: 'https://docs.example.com' },
-  { name: 'Community', url: 'https://community.example.com' },
-];
+import { useState } from 'react';
+import { Input } from '@/components/ui/input';
+import { Search } from 'lucide-react';
 
 export default function Home() {
+  const [searchTerm, setSearchTerm] = useState('');
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <SiteHeader />
@@ -21,43 +20,34 @@ export default function Home() {
             Welcome to App Central
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground text-center max-w-3xl mx-auto">
-            Your one-stop hub for the latest application builds. Download and stay updated with our newest releases.
+            Your one-stop hub for the latest application builds and recommended websites.
           </p>
         </div>
 
-        <AppGrid />
+        <section id="applications" className="mb-16">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-3xl font-bold tracking-tight">Applications</h2>
+            <div className="relative w-full max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder="Search for apps..."
+                className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+          <AppGrid searchTerm={searchTerm} />
+        </section>
 
         <Separator className="my-12 md:my-16" />
 
-        <section>
+        <section id="websites">
           <h2 className="text-3xl font-bold tracking-tight mb-6">My Links</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {links.map((link) => (
-              <Card key={link.name} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle>{link.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button asChild variant="outline">
-                    <a href={link.url} target="_blank" rel="noopener noreferrer">
-                      Visit Site
-                    </a>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-            <Card className="sm:col-span-2 lg:col-span-1 border-dashed">
-                <CardHeader>
-                    <CardTitle>Admin Panel</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Button asChild>
-                        <Link href="/admin">Go to Admin</Link>
-                    </Button>
-                </CardContent>
-            </Card>
-          </div>
+          <WebsiteList />
         </section>
+
       </main>
       <footer className="py-6 border-t">
         <div className="container mx-auto text-center text-sm text-muted-foreground">

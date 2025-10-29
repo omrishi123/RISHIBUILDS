@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "AppArtifact": {
@@ -13,6 +14,10 @@
         "name": {
           "type": "string",
           "description": "The name of the application."
+        },
+        "version": {
+            "type": "string",
+            "description": "The version of the application."
         },
         "description": {
           "type": "string",
@@ -35,10 +40,24 @@
       "required": [
         "id",
         "name",
+        "version",
         "description",
         "downloadUrl",
         "createdAt"
       ]
+    },
+    "Website": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "title": "Website",
+        "type": "object",
+        "description": "Represents a website link.",
+        "properties": {
+            "id": { "type": "string" },
+            "name": { "type": "string" },
+            "url": { "type": "string" },
+            "description": { "type": "string" }
+        },
+        "required": ["id", "name", "url", "description"]
     }
   },
   "auth": {
@@ -63,6 +82,16 @@
               "description": "The unique identifier for the app artifact."
             }
           ]
+        }
+      },
+      {
+        "path": "/websites/{websiteId}",
+        "definition": {
+            "entityName": "Website",
+            "schema": {
+                "$ref": "#/backend/entities/Website"
+            },
+            "description": "Stores website links. Publicly readable, but only writable by authenticated admins."
         }
       }
     ]

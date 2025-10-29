@@ -1,3 +1,4 @@
+
 'use client';
 
 import type { User } from 'firebase/auth';
@@ -6,9 +7,11 @@ import { useAuth } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { UploadForm } from '@/components/admin/upload-form';
 import { ManageApps } from '@/components/admin/manage-apps';
+import { ManageWebsites } from '@/components/admin/manage-websites';
 import { LogOut, LayoutDashboard } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 type AdminDashboardProps = {
   user: User;
@@ -36,11 +39,11 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-background">
+    <div className="flex flex-col min-h-screen w-full bg-muted/40">
       <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
         <nav className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
           <Link
-            href="#"
+            href="/"
             className="flex items-center gap-2 text-lg font-semibold md:text-base"
           >
             <LayoutDashboard className="h-6 w-6 text-primary" />
@@ -59,10 +62,21 @@ export function AdminDashboard({ user }: AdminDashboardProps) {
         </div>
       </header>
       <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8">
-          <UploadForm />
-          <ManageApps />
-        </div>
+        <Tabs defaultValue="apps">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="apps">Manage Apps</TabsTrigger>
+            <TabsTrigger value="websites">Manage Websites</TabsTrigger>
+          </TabsList>
+          <TabsContent value="apps">
+            <div className="grid gap-4 md:grid-cols-2 md:gap-8 mt-4">
+              <UploadForm />
+              <ManageApps />
+            </div>
+          </TabsContent>
+          <TabsContent value="websites">
+            <ManageWebsites />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

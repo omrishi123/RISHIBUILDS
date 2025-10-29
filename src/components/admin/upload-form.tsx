@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -32,6 +33,7 @@ import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 
 const formSchema = z.object({
   name: z.string().min(3, 'App name must be at least 3 characters.'),
+  version: z.string().min(1, 'Version is required.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   downloadUrl: z.string().url('Please enter a valid URL.'),
   logo: z.any().refine(file => file?.length == 1 ? file[0].size <= 500000 : true, `Max image size is 500KB.`).refine(
@@ -52,6 +54,7 @@ export function UploadForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
+      version: '',
       description: '',
       downloadUrl: '',
     },
@@ -128,19 +131,34 @@ export function UploadForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>App Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="My Awesome App v1.0" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>App Name</FormLabel>
+                    <FormControl>
+                        <Input placeholder="My Awesome App" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+                <FormField
+                control={form.control}
+                name="version"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>App Version</FormLabel>
+                    <FormControl>
+                        <Input placeholder="1.0.0" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </div>
             <FormField
               control={form.control}
               name="description"

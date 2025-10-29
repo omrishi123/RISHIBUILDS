@@ -1,12 +1,18 @@
+
 'use client';
 
+import { useMemo } from 'react';
 import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
 import { AppCard } from '@/components/app-card';
 import { Loader2 } from 'lucide-react';
 
-export function AppGrid() {
+type AppGridProps = {
+  searchTerm: string;
+};
+
+export function AppGrid({ searchTerm }: AppGridProps) {
   const firestore = useFirestore();
   
   const appsQuery = useMemoFirebase(() => {
@@ -15,6 +21,14 @@ export function AppGrid() {
   }, [firestore]);
 
   const { data: apps, isLoading: loading, error } = useCollection<AppType>(appsQuery);
+
+  const filteredApps = useMemo(() => {
+    if (!apps) return [];
+    return apps.filter(app => 
+      app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      app.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [apps, searchTerm]);
 
   if (loading) {
     return (
@@ -34,18 +48,18 @@ export function AppGrid() {
     )
   }
 
-  if (!apps || apps.length === 0) {
+  if (!filteredApps || filteredApps.length === 0) {
     return (
       <div className="text-center py-16 bg-card border rounded-lg">
         <h3 className="text-xl font-semibold mb-2">No apps found.</h3>
-        <p className="text-muted-foreground">Please check back later or contact the administrator.</p>
+        <p className="text-muted-foreground">{searchTerm ? `No apps match "${searchTerm}".` : 'Please check back later or contact the administrator.'}</p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {apps.map((app) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      {filteredApps.map((app) => (
         <AppCard key={app.id} app={app} />
       ))}
     </div>
