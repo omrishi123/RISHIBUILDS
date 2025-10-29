@@ -1,9 +1,10 @@
 
+
 'use client';
 
 import { useMemo } from 'react';
-import { doc } from 'firebase/firestore';
-import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc, increment } from 'firebase/firestore';
+import { useFirestore, useDoc, useMemoFirebase, updateDocumentNonBlocking } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
 import { SiteHeader } from '@/components/site-header';
 import { Loader2, Download, Package, Info, MessageSquare, BarChart2, Image as ImageIcon } from 'lucide-react';
@@ -27,6 +28,14 @@ export default function AppDetailPage({ params: { appId } }: AppDetailPageProps)
   }, [firestore, appId]);
 
   const { data: app, isLoading, error } = useDoc<AppType>(appRef);
+
+  const handleDownloadClick = () => {
+    if (!appRef) return;
+    // Increment the download count in Firestore
+    updateDocumentNonBlocking(appRef, {
+        downloadCount: increment(1)
+    });
+  };
 
   if (isLoading) {
     return (
@@ -76,7 +85,7 @@ export default function AppDetailPage({ params: { appId } }: AppDetailPageProps)
                 )}
               </div>
             </Card>
-            <Button asChild className="w-full text-lg" size="lg">
+            <Button asChild className="w-full text-lg" size="lg" onClick={handleDownloadClick}>
               <a href={app.downloadUrl} download>
                 <Download className="mr-3 h-5 w-5" />
                 Download APK
@@ -112,7 +121,7 @@ export default function AppDetailPage({ params: { appId } }: AppDetailPageProps)
                     <CardContent className="space-y-2">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Total Downloads</span>
-                            <span className="font-bold">Coming Soon</span>
+                            <span className="font-bold">{app.downloadCount || 0}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">App Rating</span>

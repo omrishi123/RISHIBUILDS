@@ -9,6 +9,7 @@ export type AppArtifact = {
   createdAt: Timestamp;
   logoBase64?: string;
   version: string;
+  downloadCount?: number;
 };
 
 export type Website = {

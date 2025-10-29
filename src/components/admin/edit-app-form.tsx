@@ -1,18 +1,15 @@
 
-
 'use client';
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import type { AppArtifact } from '@/types';
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardFooter
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,11 +23,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UploadCloud, CheckCircle, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Save, Image as ImageIcon } from 'lucide-react';
 import Image from 'next/image';
 
-import { collection, serverTimestamp } from 'firebase/firestore';
-import { useFirestore, addDocumentNonBlocking } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { useFirestore, updateDocumentNonBlocking } from '@/firebase';
 
 const formSchema = z.object({
   name: z.string().min(3, 'App name must be at least 3 characters.'),
@@ -45,19 +42,24 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-export function UploadForm() {
+type EditAppFormProps = {
+    app: AppArtifact;
+    onSuccess: () => void;
+}
+
+export function EditAppForm({ app, onSuccess }: EditAppFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(app.logoBase64 || null);
   const { toast } = useToast();
   const firestore = useFirestore();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      version: '',
-      description: '',
-      downloadUrl: '',
+      name: app.name,
+      version: app.version,
+      description: app.description,
+      downloadUrl: app.downloadUrl,
     },
   });
 
@@ -70,7 +72,7 @@ export function UploadForm() {
       };
       reader.readAsDataURL(file);
     } else {
-      setPreview(null);
+      setPreview(app.logoBase64 || null);
     }
   };
 
@@ -86,53 +88,33 @@ export function UploadForm() {
   const onSubmit = async (values: FormValues) => {
     setIsSubmitting(true);
     
-    let logoBase64: string | undefined = undefined;
+    let logoBase64: string | undefined = app.logoBase64;
     if (values.logo && values.logo.length > 0) {
         logoBase64 = await getBase64(values.logo[0]);
     }
 
     const { logo, ...submissionData } = values;
 
-    addDocumentNonBlocking(collection(firestore, 'appArtifacts'), {
+    const appRef = doc(firestore, 'appArtifacts', app.id);
+    
+    updateDocumentNonBlocking(appRef, {
       ...submissionData,
       logoBase64,
-      downloadCount: 0,
-      createdAt: serverTimestamp(),
-    }).then(() => {
-        toast({
-            title: 'Success!',
-            description: 'Your app has been added successfully.',
-            action: (
-              <div className="p-1 rounded-full bg-green-500">
-                  <CheckCircle className="h-5 w-5 text-white" />
-              </div>
-            ),
-          });
-  
-          setIsSubmitting(false);
-          form.reset();
-          setPreview(null);
-    }).catch(err => {
-        toast({
-            variant: 'destructive',
-            title: 'Submission Failed',
-            description: err.message,
-          });
-          setIsSubmitting(false);
     });
+    
+    toast({
+        title: 'Success!',
+        description: 'Your app has been updated successfully.',
+    });
+
+    setIsSubmitting(false);
+    onSuccess();
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Add New App</CardTitle>
-        <CardDescription>
-          Fill in the details and provide the direct download link.
-        </CardDescription>
-      </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
+            <CardContent className="space-y-4 pt-4">
             <div className="grid grid-cols-2 gap-4">
                 <FormField
                 control={form.control}
@@ -198,7 +180,7 @@ export function UploadForm() {
               name="logo"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>App Logo</FormLabel>
+                  <FormLabel>App Logo (optional)</FormLabel>
                   <FormControl>
                     <div className="flex items-center gap-4">
                         <div className="flex-shrink-0 w-16 h-16 rounded-lg border bg-secondary flex items-center justify-center">
@@ -228,13 +210,12 @@ export function UploadForm() {
               {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <UploadCloud className="mr-2 h-4 w-4" />
+                <Save className="mr-2 h-4 w-4" />
               )}
-              Add App
+              Save Changes
             </Button>
           </CardFooter>
         </form>
       </Form>
-    </Card>
   );
 }

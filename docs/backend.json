@@ -31,6 +31,10 @@
             "type": "string",
             "description": "A Base64 encoded string of the application's logo."
         },
+        "downloadCount": {
+            "type": "number",
+            "description": "The number of times the application has been downloaded."
+        },
         "createdAt": {
           "type": "string",
           "description": "A timestamp indicating when the application artifact was created.",

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState } from 'react';
@@ -8,7 +9,7 @@ import {
   doc,
   orderBy,
 } from 'firebase/firestore';
-import { useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 
@@ -32,11 +33,23 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2, Loader2, Package, Image as ImageIcon } from 'lucide-react';
+import { Trash2, Loader2, Package, Image as ImageIcon, Edit } from 'lucide-react';
 import { format } from 'date-fns';
+import { EditAppForm } from './edit-app-form';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+
 
 export function ManageApps() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingApp, setEditingApp] = useState<AppType | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+
   const { toast } = useToast();
   const firestore = useFirestore();
   
@@ -68,12 +81,22 @@ export function ManageApps() {
     }
   };
 
+  const handleEdit = (app: AppType) => {
+    setEditingApp(app);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleUpdateSuccess = () => {
+    setIsEditDialogOpen(false);
+    setEditingApp(null);
+  }
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Manage Apps</CardTitle>
         <CardDescription>
-          View and delete currently listed applications.
+          View, edit, and delete currently listed applications.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -102,40 +125,50 @@ export function ManageApps() {
                     </div>
                   </div>
                   
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-                        disabled={deletingId === app.id}
-                      >
-                        {deletingId === app.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the app entry for
-                          <span className="font-bold"> "{app.name}"</span>.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(app)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-primary hover:bg-primary/10 hover:text-primary"
+                      onClick={() => handleEdit(app)}
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+                          disabled={deletingId === app.id}
                         >
-                          Continue
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                          {deletingId === app.id ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the app entry for
+                            <span className="font-bold"> "{app.name}"</span>.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(app)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Continue
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </li>
               ))}
             </ul>
@@ -145,6 +178,16 @@ export function ManageApps() {
             </div>
           )}
         </ScrollArea>
+        {editingApp && (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit {editingApp.name}</DialogTitle>
+              </DialogHeader>
+              <EditAppForm app={editingApp} onSuccess={handleUpdateSuccess} />
+            </DialogContent>
+          </Dialog>
+        )}
       </CardContent>
     </Card>
   );
