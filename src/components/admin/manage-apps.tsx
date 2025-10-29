@@ -8,7 +8,6 @@ import {
   doc,
   orderBy,
 } from 'firebase/firestore';
-import { ref, deleteObject, getStorage } from 'firebase/storage';
 import { useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 
@@ -48,13 +47,8 @@ export function ManageApps() {
 
   const handleDelete = async (app: AppType) => {
     setDeletingId(app.id);
-    const storage = getStorage();
     try {
-      // 1. Delete file from Storage
-      const fileRef = ref(storage, app.storagePath);
-      await deleteObject(fileRef);
-
-      // 2. Delete document from Firestore
+      // Delete document from Firestore
       deleteDocumentNonBlocking(doc(firestore, 'appArtifacts', app.id));
 
       toast({
@@ -78,7 +72,7 @@ export function ManageApps() {
       <CardHeader>
         <CardTitle>Manage Apps</CardTitle>
         <CardDescription>
-          View and delete currently uploaded applications.
+          View and delete currently listed applications.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -120,9 +114,8 @@ export function ManageApps() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the app
-                          <span className="font-bold"> "{app.name}" </span>
-                          and remove its file from storage.
+                          This action cannot be undone. This will permanently delete the app entry for
+                          <span className="font-bold"> "{app.name}"</span>.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -141,7 +134,7 @@ export function ManageApps() {
             </ul>
           ) : (
             <div className="flex flex-col items-center justify-center text-center h-full text-muted-foreground">
-              <p>No apps have been uploaded yet.</p>
+              <p>No apps have been added yet.</p>
             </div>
           )}
         </ScrollArea>

@@ -4,7 +4,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "AppArtifact",
       "type": "object",
-      "description": "Represents an application artifact (e.g., .apk, .zip) uploaded to Firebase Storage and its metadata stored in Firestore.",
+      "description": "Represents an application artifact. The artifact itself is hosted on Google Drive, and its metadata is stored in Firestore.",
       "properties": {
         "id": {
           "type": "string",
@@ -18,14 +18,9 @@
           "type": "string",
           "description": "A detailed description of the application."
         },
-        "downloadURL": {
+        "gdriveFileId": {
           "type": "string",
-          "description": "The URL from which the application artifact can be downloaded.",
-          "format": "uri"
-        },
-        "storagePath": {
-          "type": "string",
-          "description": "The path to the application artifact in Firebase Storage.  This is needed for deletion."
+          "description": "The file ID from Google Drive for direct download."
         },
         "createdAt": {
           "type": "string",
@@ -37,8 +32,7 @@
         "id",
         "name",
         "description",
-        "downloadURL",
-        "storagePath",
+        "gdriveFileId",
         "createdAt"
       ]
     }
@@ -58,7 +52,7 @@
           "schema": {
             "$ref": "#/backend/entities/AppArtifact"
           },
-          "description": "Stores app artifact metadata.  Accessible only to authenticated admins via Firebase Authentication. Includes fields for downloadURL and storagePath for management.",
+          "description": "Stores app artifact metadata. Publicly readable, but only writable by authenticated admins.",
           "params": [
             {
               "name": "appArtifactId",
@@ -67,7 +61,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "This Firestore structure prioritizes security, scalability, and debuggability, especially concerning authorization. It emphasizes Authorization Independence by denormalizing any necessary authorization context into the documents themselves, removing the need for `get()` calls in security rules. This prevents rule breakages from atomic operations and simplifies debugging.\n\nThe structure is segregated to enforce homogeneous security postures within collections. For instance, all `appArtifacts` are stored in a single collection, simplifying rules.\n\nAuthorization is modeled using standard patterns: a top-level collection `/appArtifacts/{appArtifactId}` ensures no complex authorization logic is needed.\n\nQAPs (Rules Are Not Filters) is supported through the use of direct collection access for artifacts, ensuring list operations are secure. Additionally, the design follows the principles of clarity, predictability, and consistency by using explicit state modeling, predictable schemas, and radical consistency in naming conventions.\n\nSpecifically, since the admin panel is the only actor uploading data and is secured by Firebase Authentication, there is no need for a more complex ownership model such as membership maps."
+    ]
   }
 }

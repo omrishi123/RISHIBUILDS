@@ -23,32 +23,20 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, UploadCloud, CheckCircle } from 'lucide-react';
 
-import { ref, uploadBytesResumable, getDownloadURL, getStorage } from 'firebase/storage';
 import { collection, serverTimestamp } from 'firebase/firestore';
 import { useFirestore, addDocumentNonBlocking } from '@/firebase';
-import { formatBytes } from '@/lib/utils';
-
-const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 const formSchema = z.object({
   name: z.string().min(3, 'App name must be at least 3 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
-  file: z
-    .instanceof(File)
-    .refine((file) => file.size > 0, 'An app file is required.')
-    .refine(
-      (file) => file.size <= MAX_FILE_SIZE,
-      `Max file size is ${formatBytes(MAX_FILE_SIZE)}.`
-    ),
+  gdriveFileId: z.string().min(10, 'Google Drive File ID is required.'),
 });
 
 export function UploadForm() {
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [isUploading, setIsUploading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
 
@@ -57,72 +45,45 @@ export function UploadForm() {
     defaultValues: {
       name: '',
       description: '',
-      file: new File([], ""),
+      gdriveFileId: '',
     },
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const file = values.file;
-    if (!file) return;
+    setIsSubmitting(true);
     
-    const storage = getStorage();
-    setIsUploading(true);
-    const storagePath = `app_files/${Date.now()}_${file.name}`;
-    const storageRef = ref(storage, storagePath);
-    const uploadTask = uploadBytesResumable(storageRef, file);
-
-    uploadTask.on(
-      'state_changed',
-      (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        setUploadProgress(progress);
-      },
-      (error) => {
-        console.error('Upload failed:', error);
+    addDocumentNonBlocking(collection(firestore, 'appArtifacts'), {
+      ...values,
+      createdAt: serverTimestamp(),
+    }).then(() => {
         toast({
-          variant: 'destructive',
-          title: 'Upload Failed',
-          description: error.message,
-        });
-        setIsUploading(false);
-        setUploadProgress(0);
-      },
-      async () => {
-        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-        
-        addDocumentNonBlocking(collection(firestore, 'appArtifacts'), {
-          name: values.name,
-          description: values.description,
-          downloadURL,
-          storagePath,
-          createdAt: serverTimestamp(),
-        });
-        
+            title: 'Success!',
+            description: 'Your app has been added successfully.',
+            action: (
+              <div className="p-1 rounded-full bg-green-500">
+                  <CheckCircle className="h-5 w-5 text-white" />
+              </div>
+            ),
+          });
+  
+          setIsSubmitting(false);
+          form.reset();
+    }).catch(err => {
         toast({
-          title: 'Success!',
-          description: 'Your app has been uploaded successfully.',
-          action: (
-            <div className="p-1 rounded-full bg-green-500">
-                <CheckCircle className="h-5 w-5 text-white" />
-            </div>
-          ),
-        });
-
-        setIsUploading(false);
-        setUploadProgress(0);
-        form.reset();
-        // This is a workaround to reset the file input visually
-        form.setValue('file', new File([], ""));
-      }
-    );
+            variant: 'destructive',
+            title: 'Submission Failed',
+            description: err.message,
+          });
+          setIsSubmitting(false);
+    });
   };
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Upload New App</CardTitle>
+        <CardTitle>Add New App</CardTitle>
         <CardDescription>
-          Fill in the details and upload the app file.
+          Fill in the details and provide the Google Drive file ID.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -159,40 +120,29 @@ export function UploadForm() {
             />
             <FormField
               control={form.control}
-              name="file"
-              render={({ field: { onChange, value, ...rest } }) => (
+              name="gdriveFileId"
+              render={({ field }) => (
                 <FormItem>
-                  <FormLabel>App File (.apk, .zip, etc.)</FormLabel>
+                  <FormLabel>Google Drive File ID</FormLabel>
                   <FormControl>
                     <Input
-                      type="file"
-                      onChange={(e) => {
-                        onChange(e.target.files ? e.target.files[0] : null);
-                      }}
-                      {...rest}
+                      placeholder="Paste the file ID from your Google Drive share link"
+                      {...field}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {isUploading && (
-              <div className="space-y-2">
-                <Progress value={uploadProgress} />
-                <p className="text-sm text-muted-foreground text-center">
-                  Uploading... {Math.round(uploadProgress)}%
-                </p>
-              </div>
-            )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isUploading}>
-              {isUploading ? (
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <UploadCloud className="mr-2 h-4 w-4" />
               )}
-              Upload App
+              Add App
             </Button>
           </CardFooter>
         </form>
