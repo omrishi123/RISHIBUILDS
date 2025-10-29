@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, use } from 'react';
 import { doc, increment, updateDoc } from 'firebase/firestore';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
@@ -14,13 +14,14 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
+import { SiteFooter } from '@/components/site-footer';
 
 type AppDetailPageProps = {
-  params: { appId: string };
+  params: Promise<{ appId: string }>;
 };
 
 export default function AppDetailPage({ params }: AppDetailPageProps) {
-  const { appId } = params;
+  const { appId } = use(params);
   const firestore = useFirestore();
   const { toast } = useToast();
 
@@ -62,6 +63,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
         </div>
+        <SiteFooter />
       </div>
     );
   }
@@ -79,6 +81,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                 </Button>
             </div>
         </div>
+        <SiteFooter />
       </div>
     );
   }
@@ -174,11 +177,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
           </div>
         </div>
       </main>
-      <footer className="py-6 border-t mt-8">
-        <div className="container mx-auto text-center text-sm text-muted-foreground">
-          App Central © {new Date().getFullYear()}
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

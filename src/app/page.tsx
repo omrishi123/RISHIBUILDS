@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SiteFooter } from '@/components/site-footer';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,11 +52,7 @@ export default function Home() {
         </Tabs>
 
       </main>
-      <footer className="py-6 border-t mt-16">
-        <div className="container mx-auto text-center text-sm text-muted-foreground">
-          App Central © {new Date().getFullYear()}
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
