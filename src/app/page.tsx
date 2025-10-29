@@ -21,7 +21,7 @@ export default function Home() {
             Welcome to App Central
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground text-center max-w-3xl mx-auto">
-            Your one-stop hub for the latest application builds and recommended websites.
+            Your one-stop hub for the latest application and websites build my Om Rishi Kumar
           </p>
         </div>
 
