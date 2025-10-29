@@ -4,6 +4,6 @@ export type AppArtifact = {
   id: string;
   name: string;
   description: string;
-  gdriveFileId: string;
+  downloadUrl: string;
   createdAt: Timestamp;
 };

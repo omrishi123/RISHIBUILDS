@@ -10,7 +10,6 @@ type AppCardProps = {
 
 export function AppCard({ app }: AppCardProps) {
   const formattedDate = app.createdAt ? format(app.createdAt.toDate(), 'PPP') : 'N/A';
-  const downloadUrl = `https://drive.google.com/uc?export=download&id=${app.gdriveFileId}`;
 
   return (
     <Card className="flex flex-col h-full transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
@@ -23,7 +22,7 @@ export function AppCard({ app }: AppCardProps) {
       </CardContent>
       <CardFooter>
         <Button asChild className="w-full bg-accent hover:bg-accent/90">
-          <a href={downloadUrl} download>
+          <a href={app.downloadUrl} download>
             <Download className="mr-2 h-4 w-4" />
             Download
           </a>

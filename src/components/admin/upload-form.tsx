@@ -32,7 +32,7 @@ import { useFirestore, addDocumentNonBlocking } from '@/firebase';
 const formSchema = z.object({
   name: z.string().min(3, 'App name must be at least 3 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
-  gdriveFileId: z.string().min(10, 'Google Drive File ID is required.'),
+  downloadUrl: z.string().url('Please enter a valid URL.'),
 });
 
 export function UploadForm() {
@@ -45,7 +45,7 @@ export function UploadForm() {
     defaultValues: {
       name: '',
       description: '',
-      gdriveFileId: '',
+      downloadUrl: '',
     },
   });
 
@@ -83,7 +83,7 @@ export function UploadForm() {
       <CardHeader>
         <CardTitle>Add New App</CardTitle>
         <CardDescription>
-          Fill in the details and provide the Google Drive file ID.
+          Fill in the details and provide the direct download link.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -120,13 +120,13 @@ export function UploadForm() {
             />
             <FormField
               control={form.control}
-              name="gdriveFileId"
+              name="downloadUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Google Drive File ID</FormLabel>
+                  <FormLabel>Download URL</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Paste the file ID from your Google Drive share link"
+                      placeholder="https://www.mediafire.com/..."
                       {...field}
                     />
                   </FormControl>

@@ -115,7 +115,7 @@ export function ManageApps() {
                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action cannot be undone. This will permanently delete the app entry for
-                          <span className="font-bold"> "{app.name}"</span>.
+                          <span className="font-bold"> "{app.name}"</span>. The file hosted on MediaFire will not be deleted.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
