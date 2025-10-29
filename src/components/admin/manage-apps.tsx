@@ -120,7 +120,7 @@ export function ManageApps() {
                     <div>
                         <p className="font-semibold">{app.name}</p>
                         <p className="text-xs text-muted-foreground">
-                            Added on {app.createdAt ? format(app.createdAt.toDate(), 'P') : 'N/A'}
+                            Added on {app.createdAt ? format(new Date(app.createdAt.seconds * 1000), 'P') : 'N/A'}
                         </p>
                     </div>
                   </div>

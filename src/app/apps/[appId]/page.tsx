@@ -72,7 +72,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     );
   }
 
-  const formattedDate = app.createdAt ? format(app.createdAt.toDate(), 'PPP') : 'N/A';
+  const formattedDate = app.createdAt ? format(new Date(app.createdAt.seconds * 1000), 'PPP') : 'N/A';
 
   return (
     <div className="flex flex-col min-h-screen bg-muted/20">

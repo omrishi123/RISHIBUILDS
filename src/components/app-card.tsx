@@ -11,7 +11,7 @@ type AppCardProps = {
 };
 
 export function AppCard({ app }: AppCardProps) {
-  const formattedDate = app.createdAt ? format(app.createdAt.toDate(), 'PPP') : 'N/A';
+  const formattedDate = app.createdAt ? format(new Date(app.createdAt.seconds * 1000), 'PPP') : 'N/A';
 
   return (
     <Link href={`/apps/${app.id}`} className="block h-full group">
