@@ -30,7 +30,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     return doc(firestore, 'appArtifacts', appId);
   }, [firestore, appId]);
 
-  const { data: app, isLoading, error } = useDoc<AppType>(appRef);
+  const { data: app, isLoading } = useDoc<AppType>(appRef);
 
   const handleDownloadClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!appRef || !app?.downloadUrl) return;
@@ -84,32 +84,12 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     }
   };
   
-  // Always show loading spinner if we don't have the appId yet OR if useDoc is loading.
-  if (!appId || isLoading) {
+  if (isLoading || !app) {
     return (
       <div className="flex flex-col min-h-screen">
         <SiteHeader />
         <div className="flex-1 flex items-center justify-center">
           <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
-        <SiteFooter />
-      </div>
-    );
-  }
-
-  // Show error only after loading is complete and we confirm the app doesn't exist.
-  if (error || !app) {
-    return (
-      <div className="flex flex-col min-h-screen">
-        <SiteHeader />
-        <div className="flex-1 flex items-center justify-center text-center">
-            <div>
-                <h2 className="text-2xl font-bold text-destructive">App Not Found</h2>
-                <p className="text-muted-foreground">The app you are looking for does not exist or may have been moved.</p>
-                <Button asChild variant="outline" className="mt-4">
-                    <a href="/">Return Home</a>
-                </Button>
-            </div>
         </div>
         <SiteFooter />
       </div>
