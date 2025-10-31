@@ -15,6 +15,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 import { SiteFooter } from '@/components/site-footer';
+import { AdBanner } from '@/components/ad-banner';
 
 type AppDetailPageProps = {
   params: Promise<{ appId: string }>;
@@ -74,6 +75,13 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         });
     }
   };
+
+  const appPageAdCode = `
+    <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+      <iframe data-aa='2415573' src='//acceptable.a-ads.com/2415573/?size=Adaptive'
+                        style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+    </div>
+  `;
   
   if (!appId || isLoading) {
     return (
@@ -91,15 +99,8 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     return (
         <div className="flex flex-col min-h-screen">
             <SiteHeader />
-            <div className="flex-1 flex items-center justify-center text-center">
-                <Card className="max-w-md">
-                    <CardHeader>
-                        <CardTitle className="text-2xl">App Not Found</CardTitle>
-                        <CardDescription>
-                            The app you are looking for does not exist or may have been moved.
-                        </CardDescription>
-                    </CardHeader>
-                </Card>
+            <div className="flex-1 flex items-center justify-center">
+              <Loader2 className="h-16 w-16 animate-spin text-primary" />
             </div>
             <SiteFooter />
         </div>
@@ -147,6 +148,8 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                     <span>Published on {formattedDate}</span>
                 </div>
             </div>
+
+            <AdBanner adCode={appPageAdCode} />
 
             <Card>
               <CardHeader>

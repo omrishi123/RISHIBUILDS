@@ -12,6 +12,12 @@ import { AdBanner } from '@/components/ad-banner';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
+  const homePageAdCode = `
+    <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+      <iframe data-aa='2415571' src='//acceptable.a-ads.com/2415571/?size=Adaptive'
+                        style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+    </div>
+  `;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -27,7 +33,7 @@ export default function Home() {
         </div>
 
         {/* --- Ad Banner Added Here --- */}
-        <AdBanner />
+        <AdBanner adCode={homePageAdCode} />
 
         <Tabs defaultValue="applications" className="w-full">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
