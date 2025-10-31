@@ -2,10 +2,11 @@
 
 // A simple component to display an ad banner.
 export function AdBanner() {
-  // IMPORTANT: Replace the HTML string below with the ad code you received from your ad provider (like A-Ads).
+  // IMPORTANT: This now contains your live ad code.
   const adCode = `
-    <div style="display: flex; justify-content: center; align-items: center; width: 100%; height: 90px; background-color: #f0f0f0; border: 1px dashed #ccc; border-radius: 8px;">
-      <p style="color: #666; font-family: sans-serif;">Your 728x90 Ad Banner Here</p>
+    <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+      <iframe data-aa='2415571' src='//acceptable.a-ads.com/2415571/?size=Adaptive'
+                        style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
     </div>
   `;
 
