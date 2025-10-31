@@ -6,7 +6,14 @@
  */
 export function StickyAdBanner() {
   const adCode = `
-    <div style="position: fixed; z-index: 99999; top: 0; right: 0; width: 15%; height: 100%; min-width: 100px;">
+    <style>
+      @media (max-width: 900px) {
+        #sticky-ad-container {
+          display: none !important;
+        }
+      }
+    </style>
+    <div id="sticky-ad-container" style="position: fixed; z-index: 99999; top: 0; right: 0; width: 15%; height: 100%; min-width: 100px;">
       <input autocomplete="off" type="checkbox" id="aadsstickymhf5jl90" hidden />
       <div style="width:100%;height:100%;position:relative;text-align:center;font-size:0;">
         <label for="aadsstickymhf5jl90" style="bottom: 24px;margin:0 auto;right:0;left:0;max-width:24px; position: absolute;border-radius: 4px; background: rgba(248, 248, 249, 0.70); padding: 4px;z-index: 99999;cursor:pointer">
