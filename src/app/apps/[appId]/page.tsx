@@ -120,7 +120,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
   return (
     <div className="flex flex-col min-h-screen bg-muted/20">
       <SiteHeader />
-      <main className="flex-1 container mx-auto py-8 px-4 md:px-6">
+      <main className="flex-1 container mx-auto py-8 px-4 md:px-6 relative z-10">
         <div className="grid md:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="md:col-span-1 space-y-6">
