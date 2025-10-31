@@ -102,8 +102,8 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         <SiteHeader />
         <div className="flex-1 flex items-center justify-center text-center">
             <div>
-                <h2 className="text-2xl font-bold text-destructive">App not found</h2>
-                <p className="text-muted-foreground">The requested app could not be loaded. It may have been removed.</p>
+                <h2 className="text-2xl font-bold text-destructive">App Not Found</h2>
+                <p className="text-muted-foreground">The app you are looking for does not exist or may have been moved.</p>
                 <Button asChild variant="outline" className="mt-4">
                     <a href="/">Return Home</a>
                 </Button>
