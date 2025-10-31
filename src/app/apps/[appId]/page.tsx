@@ -140,7 +140,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                     <Download className="mr-3 h-5 w-5" />
                     Download APK
                 </Button>
-                <Button variant="outline" size="lg" className="px-4" onClick={handleShareClick}>
+                <Button variant="outline" size="lg" className="px-4 cursor-pointer" onClick={handleShareClick}>
                     <Share2 className="h-5 w-5" />
                 </Button>
             </div>
