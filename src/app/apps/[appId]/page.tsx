@@ -116,7 +116,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
 
   // This check is necessary for TypeScript to know 'app' is not null.
   if (!app) {
-    return null; // Should not be reached due to the check above, but good for safety.
+    return null;
   }
 
   const formattedDate = app.createdAt ? format(new Date(app.createdAt.seconds * 1000), 'PPP') : 'N/A';
