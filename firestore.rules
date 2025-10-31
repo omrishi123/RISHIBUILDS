@@ -1,3 +1,4 @@
+
 /**
  * @fileoverview Firestore Security Rules for Prototyping.
  *
@@ -35,7 +36,7 @@ service cloud.firestore {
     match /appArtifacts/{appArtifactId} {
       allow get, list: if true;
       allow create, delete: if isSignedIn();
-      // Allow full updates for signed-in users.
+      // Allow full updates for signed-in users. This also covers pinning (isPinned field).
       allow update: if isSignedIn();
       // Separately, allow anyone to increment the download count.
       allow update: if request.resource.data.downloadCount == resource.data.downloadCount + 1 &&

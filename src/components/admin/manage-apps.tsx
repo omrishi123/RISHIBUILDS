@@ -33,7 +33,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2, Loader2, Package, Image as ImageIcon, Edit } from 'lucide-react';
+import { Trash2, Loader2, Package, Image as ImageIcon, Edit, Pin, PinOff } from 'lucide-react';
 import { format } from 'date-fns';
 import { EditAppForm } from './edit-app-form';
 import {
@@ -43,6 +43,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { Switch } from '../ui/switch';
 
 
 export function ManageApps() {
@@ -91,12 +92,23 @@ export function ManageApps() {
     setEditingApp(null);
   }
 
+  const handlePinToggle = (app: AppType) => {
+    const appRef = doc(firestore, 'appArtifacts', app.id);
+    const newPinStatus = !app.isPinned;
+    updateDocumentNonBlocking(appRef, { isPinned: newPinStatus });
+    toast({
+      title: newPinStatus ? 'App Pinned' : 'App Unpinned',
+      description: `"${app.name}" has been ${newPinStatus ? 'pinned' : 'unpinned'}.`,
+    });
+  };
+
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Manage Apps</CardTitle>
         <CardDescription>
-          View, edit, and delete currently listed applications.
+          View, edit, pin, and delete currently listed applications.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -126,6 +138,14 @@ export function ManageApps() {
                   </div>
                   
                   <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className={`hover:bg-primary/10 ${app.isPinned ? 'text-primary' : 'text-muted-foreground hover:text-primary'}`}
+                      onClick={() => handlePinToggle(app)}
+                    >
+                      {app.isPinned ? <PinOff className="h-4 w-4" /> : <Pin className="h-4 w-4" />}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

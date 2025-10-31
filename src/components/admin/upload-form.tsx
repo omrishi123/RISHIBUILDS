@@ -149,6 +149,7 @@ export function UploadForm() {
       logoBase64,
       downloadCount: 0,
       createdAt: serverTimestamp(),
+      isPinned: false, // Default to not pinned
     }).then(() => {
         toast({
             title: 'Success!',

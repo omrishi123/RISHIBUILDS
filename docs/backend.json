@@ -39,6 +39,10 @@
           "type": "string",
           "description": "A timestamp indicating when the application artifact was created.",
           "format": "date-time"
+        },
+        "isPinned": {
+            "type": "boolean",
+            "description": "Indicates if the app should be pinned to the top of the list."
         }
       },
       "required": [

@@ -3,7 +3,7 @@ import type { AppArtifact as AppType } from '@/types';
 import { Card } from '@/components/ui/card';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Image as ImageIcon } from 'lucide-react';
+import { Image as ImageIcon, Pin } from 'lucide-react';
 
 type AppCardProps = {
   app: AppType;
@@ -12,7 +12,12 @@ type AppCardProps = {
 export function AppCard({ app }: AppCardProps) {
   return (
     <Link href={`/apps/${app.id}`} className="block h-full group">
-        <Card className="h-full transform transition-all duration-200 group-hover:bg-secondary/60 group-hover:shadow-md">
+        <Card className="h-full transform transition-all duration-200 group-hover:bg-secondary/60 group-hover:shadow-md relative overflow-hidden">
+            {app.isPinned && (
+              <div className="absolute top-0 right-0 bg-primary text-primary-foreground p-1 rounded-bl-lg z-10">
+                <Pin className="h-4 w-4" />
+              </div>
+            )}
             <div className="flex items-center p-3 gap-3">
                 <div className="relative h-16 w-16 flex-shrink-0">
                     {app.logoBase64 ? (

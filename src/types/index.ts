@@ -10,6 +10,7 @@ export type AppArtifact = {
   logoBase64?: string;
   version: string;
   downloadCount?: number;
+  isPinned?: boolean;
 };
 
 export type Website = {

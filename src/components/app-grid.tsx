@@ -22,12 +22,24 @@ export function AppGrid({ searchTerm }: AppGridProps) {
 
   const { data: apps, isLoading: loading, error } = useCollection<AppType>(appsQuery);
 
-  const filteredApps = useMemo(() => {
+  const filteredAndSortedApps = useMemo(() => {
     if (!apps) return [];
-    return apps.filter(app => 
+    
+    // Filter first
+    const filtered = apps.filter(app => 
       app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       app.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // Then sort: pinned apps first, then by creation date
+    return filtered.sort((a, b) => {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      // If both are pinned or both are not, original order (by date) is maintained
+      // because the initial query is already sorted by createdAt.
+      return 0;
+    });
+
   }, [apps, searchTerm]);
 
   if (loading) {
@@ -48,7 +60,7 @@ export function AppGrid({ searchTerm }: AppGridProps) {
     )
   }
 
-  if (!filteredApps || filteredApps.length === 0) {
+  if (!filteredAndSortedApps || filteredAndSortedApps.length === 0) {
     return (
       <div className="text-center py-16 bg-card border rounded-lg">
         <h3 className="text-xl font-semibold mb-2">No apps found.</h3>
@@ -59,7 +71,7 @@ export function AppGrid({ searchTerm }: AppGridProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-      {filteredApps.map((app) => (
+      {filteredAndSortedApps.map((app) => (
         <AppCard key={app.id} app={app} />
       ))}
     </div>
