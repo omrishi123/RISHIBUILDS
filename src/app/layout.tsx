@@ -8,6 +8,8 @@ import { StickyAdBanner } from '@/components/sticky-ad-banner';
 export const metadata: Metadata = {
   title: 'RishiBuilds',
   description: 'Download the latest app builds.',
+  manifest: '/manifest.json',
+  themeColor: '#ffffff',
 };
 
 export default function RootLayout({
