@@ -35,10 +35,11 @@ service cloud.firestore {
     match /appArtifacts/{appArtifactId} {
       allow get, list: if true;
       allow create, delete: if isSignedIn();
-      // Allow full updates for admins, and download count increments for anyone.
-      allow update: if isSignedIn() || 
-                      (request.resource.data.keys().hasOnly(['downloadCount']) && 
-                       request.resource.data.downloadCount == resource.data.downloadCount + 1);
+      // Allow full updates for signed-in users.
+      allow update: if isSignedIn();
+      // Separately, allow anyone to increment the download count.
+      allow update: if request.resource.data.downloadCount == resource.data.downloadCount + 1 &&
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['downloadCount']);
     }
 
     /**
