@@ -23,16 +23,22 @@ service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows public read access to app artifacts, but restricts write access to authenticated users.
+     * @description Allows public read access to app artifacts, but restricts write access.
      * @path /appArtifacts/{appArtifactId}
      * @allow (get, list): Any user can read app artifact data.
-     * @allow (create, update, delete): Only authenticated users can modify app artifact data.
-     * @deny (create, update, delete): Unauthenticated users cannot modify app artifact data.
-     * @principle Allows public read access for easy prototyping but requires authentication for write operations.
+     * @allow (create, delete): Only authenticated users can create or delete app artifact data.
+     * @allow (update): 
+     *    1. Authenticated users can update any field.
+     *    2. Any user (public or authenticated) can update only the downloadCount.
+     * @principle Allows public read access and public download counting, but requires authentication for other write operations.
      */
     match /appArtifacts/{appArtifactId} {
       allow get, list: if true;
-      allow create, update, delete: if isSignedIn();
+      allow create, delete: if isSignedIn();
+      // Allow full updates for admins, and download count increments for anyone.
+      allow update: if isSignedIn() || 
+                      (request.resource.data.keys().hasOnly(['downloadCount']) && 
+                       request.resource.data.downloadCount == resource.data.downloadCount + 1);
     }
 
     /**
