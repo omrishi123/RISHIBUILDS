@@ -6,7 +6,7 @@ import { doc, increment, updateDoc } from 'firebase/firestore';
 import { useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import type { AppArtifact as AppType } from '@/types';
 import { SiteHeader } from '@/components/site-header';
-import { Loader2, Download, Package, Info, MessageSquare, BarChart2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Download, Package, Info, MessageSquare, BarChart2, Image as ImageIcon, Share2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -54,6 +54,34 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
 
     // Programmatically start the download after the update
     window.location.href = app.downloadUrl;
+  };
+
+  const handleShareClick = async () => {
+    if (!app) return;
+    const shareData = {
+        title: app.name,
+        text: `Check out ${app.name} on App Central!`,
+        url: window.location.href
+    };
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            // Fallback for browsers that don't support the Web Share API
+            await navigator.clipboard.writeText(window.location.href);
+            toast({
+                title: 'Link Copied!',
+                description: 'The app link has been copied to your clipboard.',
+            });
+        }
+    } catch (err) {
+        console.error('Share failed:', err);
+        toast({
+            variant: "destructive",
+            title: 'Share Failed',
+            description: 'Could not share the app at this time.',
+        });
+    }
   };
 
   if (isLoading) {
@@ -106,10 +134,15 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                 )}
               </div>
             </Card>
-            <Button className="w-full text-lg" size="lg" onClick={handleDownloadClick}>
-                <Download className="mr-3 h-5 w-5" />
-                Download APK
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button className="w-full text-lg" size="lg" onClick={handleDownloadClick}>
+                    <Download className="mr-3 h-5 w-5" />
+                    Download APK
+                </Button>
+                <Button variant="outline" size="lg" className="px-4" onClick={handleShareClick}>
+                    <Share2 className="h-5 w-5" />
+                </Button>
+            </div>
           </div>
 
           {/* Right Column */}
