@@ -49,7 +49,8 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     window.location.href = app.downloadUrl;
   };
 
-  const handleShareClick = async () => {
+  const handleShareClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // Prevent any default browser action
     if (!app) return;
     const shareData = {
         title: app.name,
