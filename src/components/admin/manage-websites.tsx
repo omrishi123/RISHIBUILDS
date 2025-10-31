@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState } from 'react';
@@ -34,7 +33,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Trash2, Loader2, PlusCircle, Globe } from 'lucide-react';
+import { Trash2, Loader2, PlusCircle, Globe, Edit } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +45,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { EditWebsiteForm } from './edit-website-form';
 
 const formSchema = z.object({
   name: z.string().min(2, 'Name is required.'),
@@ -56,6 +62,8 @@ const formSchema = z.object({
 export function ManageWebsites() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingWebsite, setEditingWebsite] = useState<Website | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
   const firestore = useFirestore();
 
@@ -97,6 +105,16 @@ export function ManageWebsites() {
       setDeletingId(null);
     }
   };
+  
+  const handleEdit = (website: Website) => {
+    setEditingWebsite(website);
+    setIsEditDialogOpen(true);
+  };
+  
+  const handleUpdateSuccess = () => {
+    setIsEditDialogOpen(false);
+    setEditingWebsite(null);
+  }
 
   return (
     <div className="grid gap-8 md:grid-cols-2">
@@ -161,23 +179,33 @@ export function ManageWebsites() {
                         <p className="text-xs text-muted-foreground truncate max-w-xs">{site.url}</p>
                       </div>
                     </div>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={deletingId === site.id}>
-                          {deletingId === site.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                          <AlertDialogDescription>This action will permanently delete the website entry for "{site.name}".</AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction onClick={() => handleDelete(site)} className="bg-destructive hover:bg-destructive/90">Continue</AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="text-primary hover:bg-primary/10 hover:text-primary"
+                        onClick={() => handleEdit(site)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10 hover:text-destructive" disabled={deletingId === site.id}>
+                            {deletingId === site.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>This action will permanently delete the website entry for "{site.name}".</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleDelete(site)} className="bg-destructive hover:bg-destructive/90">Continue</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </li>
                 ))}
               </ul>
@@ -186,6 +214,16 @@ export function ManageWebsites() {
             )}
           </ScrollArea>
         </CardContent>
+         {editingWebsite && (
+          <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit {editingWebsite.name}</DialogTitle>
+              </DialogHeader>
+              <EditWebsiteForm website={editingWebsite} onSuccess={handleUpdateSuccess} />
+            </DialogContent>
+          </Dialog>
+        )}
       </Card>
     </div>
   );
