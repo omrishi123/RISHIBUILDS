@@ -83,8 +83,9 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         });
     }
   };
-
-  if (isLoading) {
+  
+  // Always show loading spinner if we don't have the appId yet OR if useDoc is loading.
+  if (!appId || isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
         <SiteHeader />
@@ -96,6 +97,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     );
   }
 
+  // Show error only after loading is complete and we confirm the app doesn't exist.
   if (error || !app) {
     return (
       <div className="flex flex-col min-h-screen">
