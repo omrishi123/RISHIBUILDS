@@ -82,6 +82,13 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                         style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
     </div>
   `;
+
+  const leftColumnAdCode = `
+    <div id="frame" style="width: 100%;margin: auto;position: relative; z-index: 99998;">
+          <iframe data-aa='2415574' src='//acceptable.a-ads.com/2415574/?size=Adaptive'
+                            style='border:0; padding:0; width:70%; height:auto; overflow:hidden;display: block;margin: auto'></iframe>
+    </div>
+    `;
   
   if (!appId || isLoading) {
     return (
@@ -97,13 +104,13 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
 
   if (!app) {
     return (
-        <div className="flex flex-col min-h-screen">
-            <SiteHeader />
-            <div className="flex-1 flex items-center justify-center">
-              <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            </div>
-            <SiteFooter />
-        </div>
+      <div className="flex flex-col min-h-screen">
+          <SiteHeader />
+          <div className="flex-1 flex items-center justify-center">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+          </div>
+          <SiteFooter />
+      </div>
     );
   }
 
@@ -135,6 +142,9 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
                 <Button variant="outline" size="lg" className="px-4" onClick={handleShareClick}>
                     <Share2 className="h-5 w-5" />
                 </Button>
+            </div>
+            <div className="hidden md:block">
+              <AdBanner adCode={leftColumnAdCode} />
             </div>
           </div>
 
