@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SiteFooter } from '@/components/site-footer';
+import { AdBanner } from '@/components/ad-banner';
 
 export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -24,6 +25,9 @@ export default function Home() {
             Your one-stop hub for the latest application and websites build my Om Rishi Kumar
           </p>
         </div>
+
+        {/* --- Ad Banner Added Here --- */}
+        <AdBanner />
 
         <Tabs defaultValue="applications" className="w-full">
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mb-8">
