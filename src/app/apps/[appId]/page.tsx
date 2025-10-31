@@ -96,7 +96,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     );
   }
 
-  if (!isLoading && (error || !app)) {
+  if (error || !app) {
     return (
       <div className="flex flex-col min-h-screen">
         <SiteHeader />
@@ -112,11 +112,6 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         <SiteFooter />
       </div>
     );
-  }
-
-  // This check is necessary for TypeScript to know 'app' is not null.
-  if (!app) {
-    return null;
   }
 
   const formattedDate = app.createdAt ? format(new Date(app.createdAt.seconds * 1000), 'PPP') : 'N/A';
