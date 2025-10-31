@@ -9,7 +9,7 @@ export default function PrivacyPage() {
       <main className="flex-1 container mx-auto py-12 px-4 md:px-6">
         <div className="prose prose-lg max-w-4xl mx-auto">
           <h1>Privacy Policy</h1>
-          <p>Your privacy is important to us. It is App Central's policy to respect your privacy regarding any information we may collect from you across our website.</p>
+          <p>Your privacy is important to us. It is RishiBuilds's policy to respect your privacy regarding any information we may collect from you across our website.</p>
           
           <h2>1. Information we collect</h2>
           <p>We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent. We also let you know why we’re collecting it and how it will be used.</p>

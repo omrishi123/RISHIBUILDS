@@ -18,7 +18,7 @@ export default function Home() {
       <main className="flex-1 container mx-auto py-8 px-4 md:px-6">
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tighter mb-4 text-center">
-            Welcome to App Central
+            Welcome to RishiBuilds
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground text-center max-w-3xl mx-auto">
             Your one-stop hub for the latest application and websites build my Om Rishi Kumar

@@ -8,14 +8,14 @@ export default function AboutPage() {
       <SiteHeader />
       <main className="flex-1 container mx-auto py-12 px-4 md:px-6">
         <div className="prose prose-lg max-w-4xl mx-auto">
-          <h1>About App Central</h1>
+          <h1>About RishiBuilds</h1>
           <p>
-            Welcome to App Central, your number one source for the latest and greatest application builds. 
+            Welcome to RishiBuilds, your number one source for the latest and greatest application builds. 
             We're dedicated to giving you the very best of apps, with a focus on dependability, 
             customer service, and uniqueness.
           </p>
           <p>
-            Founded in {new Date().getFullYear()}, App Central has come a long way from its beginnings. 
+            Founded in {new Date().getFullYear()}, RishiBuilds has come a long way from its beginnings. 
             When we first started out, our passion for providing top-tier application access drove us 
             to do intense research, and gave us the impetus to turn hard work and inspiration into to a booming online portal. 
             We now serve customers all over the world, and are thrilled to be a part of the quirky, 

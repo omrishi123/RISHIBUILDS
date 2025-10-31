@@ -35,24 +35,16 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
   const handleDownloadClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     if (!appRef || !app?.downloadUrl) return;
 
-    // Prevent the link from navigating immediately
     event.preventDefault();
     
     try {
-      // Use updateDoc to reliably increment the download count
       await updateDoc(appRef, {
           downloadCount: increment(1)
       });
     } catch (e) {
       console.error("Failed to increment download count:", e);
-      toast({
-        variant: "destructive",
-        title: "Update Failed",
-        description: "Could not update the download count.",
-      });
     }
 
-    // Programmatically start the download after the update
     window.location.href = app.downloadUrl;
   };
 
@@ -60,14 +52,13 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     if (!app) return;
     const shareData = {
         title: app.name,
-        text: `Check out ${app.name} on App Central!`,
+        text: `Check out ${app.name} on RishiBuilds!`,
         url: window.location.href
     };
     try {
         if (navigator.share) {
             await navigator.share(shareData);
         } else {
-            // Fallback for browsers that don't support the Web Share API
             await navigator.clipboard.writeText(window.location.href);
             toast({
                 title: 'Link Copied!',
@@ -84,7 +75,7 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
     }
   };
   
-  if (isLoading || !app) {
+  if (!appId || isLoading) {
     return (
       <div className="flex flex-col min-h-screen">
         <SiteHeader />
@@ -93,6 +84,25 @@ export default function AppDetailPage({ params }: AppDetailPageProps) {
         </div>
         <SiteFooter />
       </div>
+    );
+  }
+
+  if (!app) {
+    return (
+        <div className="flex flex-col min-h-screen">
+            <SiteHeader />
+            <div className="flex-1 flex items-center justify-center text-center">
+                <Card className="max-w-md">
+                    <CardHeader>
+                        <CardTitle className="text-2xl">App Not Found</CardTitle>
+                        <CardDescription>
+                            The app you are looking for does not exist or may have been moved.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            </div>
+            <SiteFooter />
+        </div>
     );
   }
 

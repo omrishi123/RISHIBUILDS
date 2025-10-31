@@ -7,7 +7,7 @@ export function SiteHeader() {
       <div className="container flex h-14 items-center">
         <Link href="/" className="mr-6 flex items-center space-x-2">
           <CodeXml className="h-6 w-6 text-primary" />
-          <span className="font-bold sm:inline-block">App Central</span>
+          <span className="font-bold sm:inline-block">RishiBuilds</span>
         </Link>
       </div>
     </header>
